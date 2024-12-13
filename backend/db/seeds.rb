@@ -7,3 +7,7 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+Menu.destroy_all
+30.times do
+  Menu.find_or_create_by(name: Faker::Food.dish, price_centimos: Faker::Number.number(digits: 4))
+end
