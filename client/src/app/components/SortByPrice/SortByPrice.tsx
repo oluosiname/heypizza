@@ -16,6 +16,7 @@ const SortByPrice: React.FC<SortByPriceProps> = ({
         onChange={onSortOrderChange}
         className="border border-gray-300 p-2 rounded-md"
       >
+        <option value="">Sort by Price</option>
         <option value="asc">Price: Low to High</option>
         <option value="desc">Price: High to Low</option>
       </select>
