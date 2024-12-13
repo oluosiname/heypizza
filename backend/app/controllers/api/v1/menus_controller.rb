@@ -1,19 +1,23 @@
 module Api
   module V1
     class MenusController < ApplicationController
+      PER_PAGE = 10
       def index
-        menus = Menu.filtered(filter_params).ordered(sort_params)
-        render json: MenuSerializer.new(menus).serializable_hash
+        menus = Menu.filtered(permitted_params)
+                  .ordered(permitted_params)
+                  .page(permitted_params[:page])
+                  .per(permitted_params[:per_page] || PER_PAGE)
+
+        render json: {
+          data: MenuSerializer.new(menus).serializable_hash[:data],
+          total_pages: menus.total_pages
+        }
       end
 
       private
 
-      def filter_params
-        params.permit(:name)
-      end
-
-      def sort_params
-        params.permit(:sort_by, :sort_direction)
+      def permitted_params
+        params.permit(:name, :page, :per_page, :sort_by, :sort_direction)
       end
     end
   end

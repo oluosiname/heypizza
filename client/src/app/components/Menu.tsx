@@ -1,15 +1,18 @@
 "use client";
 
 import { useState, ChangeEvent, useMemo } from "react";
-import { useApi } from "../../hooks/useApi";
 import { MenuItem } from "@types";
 import SearchInput from "@/components/SearchInput";
 import MenuItemCard from "@/components/MenuItemCard";
 import SortByPrice from "@/components/SortByPrice";
+import { usePagination, useApi } from "@/hooks";
+import Pagination from "@/components/Pagination";
 
 const Menu = () => {
   const [filter, setFilter] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<string>("");
+
+  const { page, perPage, setPageNumber, setItemsPerPage } = usePagination();
 
   const queryParams = useMemo(() => {
     const params: Record<string, string> = {};
@@ -18,16 +21,20 @@ const Menu = () => {
       params["name"] = filter;
     }
 
+    params["page"] = String(page);
+    params["per_page"] = String(perPage);
+
     if (sortOrder == "") {
       return params;
     }
 
     params["sort_by"] = "price";
     params["sort_direction"] = sortOrder;
-    return params;
-  }, [filter, sortOrder]);
 
-  const { data: menus, error } = useApi<MenuItem[]>("menus", queryParams);
+    return params;
+  }, [filter, sortOrder, perPage, page]);
+
+  const { result, error } = useApi<MenuItem>("menus", queryParams);
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -37,9 +44,13 @@ const Menu = () => {
     setSortOrder(e.target.value);
   };
 
+  const handlePageChange = (newPage: number) => {
+    setPageNumber(newPage);
+  };
+
   if (error) return <div>Error: {error}</div>;
 
-  if (menus === null) {
+  if (result === null) {
     return <div>Loading...</div>;
   }
 
@@ -51,14 +62,24 @@ const Menu = () => {
 
       <SortByPrice sortOrder={sortOrder} onSortOrderChange={handleSortChange} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {menus.length === 0 ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        {result.data.length === 0 ? (
           <div>No menus available matching the filter.</div>
         ) : (
-          menus.map((menu: MenuItem) => (
+          result.data.map((menu: MenuItem) => (
             <MenuItemCard menu={menu} key={menu.id} />
           ))
         )}
+      </div>
+
+      <div className="flex justify-center mt-5 mb-5 absolute bottom-0 left-0 right-0">
+        <Pagination
+          currentPage={page}
+          totalPages={result.total_pages}
+          perPage={perPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={setItemsPerPage}
+        />
       </div>
     </div>
   );

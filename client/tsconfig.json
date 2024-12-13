@@ -21,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/components/*": ["./src/app/components/*"],
-      "@types": ["./src/app/types"]
+      "@types": ["./src/app/types"],
+      "@hooks": ["./src/app/hooks"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "./src/**/**.*", ".next/types/**/*.ts",  "cypress/**/*.ts",  "cypress.config.ts"],
