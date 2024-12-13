@@ -7,6 +7,13 @@ check_db() {
   rails db:exists > /dev/null 2>&1
 }
 
+cleanup() {
+  echo "Cleaning up..."
+  rm -f tmp/pids/server.pid
+}
+
+cleanup
+
 if check_db; then
   echo "Database exists. Skipping creation."
   rails db:migrate db:seed
