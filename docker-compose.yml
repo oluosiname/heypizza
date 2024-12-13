@@ -27,5 +27,19 @@ services:
     depends_on:
       - db
 
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
 volumes:
   db_data:
